@@ -1,0 +1,39 @@
+{
+  "name": "slab-decomposition",
+  "version": "0.0.0",
+  "description": "Slab decomposition data structure for 2D vertical ray queries",
+  "main": "slabs.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "binary-search-bounds": "^0.3.1",
+    "functional-red-black-tree": "^0.0.0",
+    "robust-orientation": "^1.0.0"
+  },
+  "devDependencies": {
+    "tape": "~2.5.0"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikolalysenko/slab-decomposition.git"
+  },
+  "keywords": [
+    "slab",
+    "decomposition",
+    "ray",
+    "query",
+    "line",
+    "segment",
+    "2d"
+  ],
+  "author": "Mikola Lysenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mikolalysenko/slab-decomposition/issues"
+  },
+  "homepage": "https://github.com/mikolalysenko/slab-decomposition"
+}
