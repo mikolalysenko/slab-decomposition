@@ -3,20 +3,6 @@
 var castRay = require("./bruteforce-ray")
 var tape = require("tape")
 
-function sgn(x) {
-  if(x < 0) { 
-    return -1
-  }
-  if(x > 0) {
-    return 1
-  }
-  return 0
-}
-
-
-function compareSegments(t, a, b, s) {
-
-}
 
 tape("bruteforce-test", function(t) {
 
@@ -36,6 +22,13 @@ tape("bruteforce-test", function(t) {
   t.equals(castRay(segments, [0, 2.5]), 2)
   t.equals(castRay(segments, [0, 10]), -1)
 
+  t.equals(castRay(segments, [1.5, -1]), 3)
+  t.equals(castRay(segments, [1.5, 0]), 3)
+  t.equals(castRay(segments, [1.5, 0.5]), 4)
+  t.equals(castRay(segments, [1.5, 1]), 4)
+  t.equals(castRay(segments, [1.5, 1.5]), 5)
+  t.equals(castRay(segments, [1.5, 2]), 5)
+  t.equals(castRay(segments, [1.5, 2.5]), -1)
 
   t.end()
 })

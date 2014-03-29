@@ -1,6 +1,17 @@
 var orient = require("robust-orientation")
+var orderSegments = require("../lib/order-segments")
 
 module.exports = checkInvariants
+
+function sgn(x) {
+  if(x < 0) {
+    return -1
+  }
+  if(x > 0) {
+    return 1
+  }
+  return 0
+}
 
 function checkInvariants(t, slabs) {
   var numSlabs = slabs.slabs.length
@@ -44,6 +55,7 @@ function checkInvariants(t, slabs) {
       for(var j=0; j<list.length-1; ++j) {
         var a = list[j].key
         var b = list[j+1].key
+        t.equals(sgn(orderSegments(a, b)), -1, "check segment order")
         t.notEqual(a[0][0], a[1][0], "check not horizontal a")
         t.notEqual(b[0][0], b[1][0], "check not horizontal b")
         if(b[0][0] < b[1][0]) {

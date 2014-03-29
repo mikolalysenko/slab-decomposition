@@ -31,17 +31,15 @@ function compareSegments(t, a, b, s) {
 }
 
 tape("order-segments", function(t) {
-
   //Check some easy examples
   compareSegments(t, 
     [[0, 0], [1, 0]],
     [[0, 1], [1, 1]],
-    -1)
+    1)
   compareSegments(t,
     [[0, 0], [1, 0]],
     [[1, 0], [2, 0]],
-    -1)
-
+    1)
   //Create a fan of segments
   var fan = [[[0,0], [0,-1]]]
   for(var x=1; x<30; ++x) {
@@ -54,10 +52,9 @@ tape("order-segments", function(t) {
   for(var i=0; i<fan.length; ++i) {
     compareSegments(t, fan[i], fan[i], 0)
     for(var j=i+1; j<fan.length; ++j) {
-      compareSegments(t, fan[i], fan[j], -1)
+      compareSegments(t, fan[i], fan[j], 1)
     }
   }
-
   //Create negative fan
   var negFan = fan.map(function(seg) {
     return [seg[0], [-seg[1][0], seg[1][1]]]
@@ -65,9 +62,8 @@ tape("order-segments", function(t) {
   for(var i=0; i<fan.length; ++i) {
     compareSegments(t, negFan[i], negFan[i], 0)
     for(var j=i+1; j<fan.length; ++j) {
-      compareSegments(t, fan[i], fan[j], -1)
+      compareSegments(t, fan[i], fan[j], 1)
     }
   }
-
   t.end()
 })

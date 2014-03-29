@@ -3,6 +3,7 @@
 var tape = require("tape")
 var slabDecomposition = require("../slabs.js")
 var checkInvariant = require("./invariant.js")
+var fullVerify = require("./full-verify.js")
 
 tape("easy test", function(t) {
 
@@ -25,15 +26,39 @@ tape("easy test", function(t) {
   t.equals(slab.castUp([0,-20]), 4)
   t.equals(slab.castUp([0,100]), -1)
 
+
+  fullVerify(t, segments)
+
   t.end()
 })
 
+tape("rhombus", function(t) {
 
-tape("general test", function(t) {
+  var segments = [
+    [[0.1, 0.1], [0.3, 0.7]],
+    [[0.1, 0.1], [0.7, 0.3]],
+    [[0.3, 0.7], [0.7, 0.3]],
+    [[0.3, 0.7], [0.9, 0.9]],
+    [[0.7, 0.3], [0.9, 0.9]]
+  ]
 
-  function verify(segments) {
+  fullVerify(t, segments)
 
+  t.end()
+})
+
+/*
+tape("pinwheel", function(t) {
+
+  var segments = []
+
+  for(var i=0; i<32; ++i) {
+    var theta = (i/16) * Math.PI
+    segments.push([[0,0], [Math.cos(i), Math.sin(i)]])
   }
 
+  fullVerify(t, segments)
+
   t.end()
 })
+*/

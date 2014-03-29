@@ -22,7 +22,9 @@ function verifyFull(t, segments) {
           s[j] = [ signX * p[0], signY * p[1] ]
         }
       }
+      result[i] = s
     }
+    return result
   }
 
   function doTest(s) {

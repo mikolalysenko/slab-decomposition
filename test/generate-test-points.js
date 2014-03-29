@@ -9,8 +9,8 @@ function generateTestPoints(segments) {
   var y = [-1e20, 1e20]
   for(var i=0; i<segments.length; ++i) {
     var s = segments[i]
-    x.push(s[0][0], s[1][0], 0.5 * (s[0][0] + s[1][0]))
-    y.push(s[0][1], s[1][1], 0.5 * (s[0][1] + s[1][1]))
+    x.push(s[0][0], s[1][0], 0.5 * (s[0][0] + s[1][0]), s[0][0]+1e-6, s[0][0]-1e-6, s[1][0]+1e-6, s[1][0]-1e-6)
+    y.push(s[0][1], s[1][1], 0.5 * (s[0][1] + s[1][1]), s[0][1]+1e-6, s[0][1]-1e-6, s[1][1]+1e-6, s[1][1]-1e-6)
   }
   uniq(x, function(a,b) { return a-b })
   uniq(y, function(a,b) { return a-b })
