@@ -31,6 +31,18 @@ function compareSegments(t, a, b, s) {
 }
 
 tape("order-segments", function(t) {
+
+  //Harder cases
+  compareSegments(t,
+    [[0,0], [0.5,0.5]],
+    [[0,2], [2,0]],
+    1)
+
+  compareSegments(t,
+    [[0,0], [0.5,0.5]],
+    [[-2,0], [1,-3]],
+    -1)
+
   //Check some easy examples
   compareSegments(t, 
     [[0, 0], [1, 0]],
@@ -65,5 +77,6 @@ tape("order-segments", function(t) {
       compareSegments(t, fan[i], fan[j], 1)
     }
   }
+
   t.end()
 })
