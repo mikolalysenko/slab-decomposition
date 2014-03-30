@@ -19,50 +19,117 @@ function compareHorizontal(e, y) {
   return e.y - y
 }
 
+function searchBucket(root, p) {
+  var lastNode = null
+  while(root) {
+    var seg = root.key
+    var l, r
+    if(seg[0][0] < seg[1][0]) {
+      l = seg[0]
+      r = seg[1]
+    } else {
+      l = seg[1]
+      r = seg[0]
+    }
+    var o = orient(l, r, p)
+    if(o < 0) {
+      root = root.left
+    } else if(o > 0) {
+      if(p[0] !== seg[1][0]) {
+        lastNode = root
+        root = root.right
+      } else {
+        var val = searchBucket(root.right, p)
+        if(val) {
+          return val
+        }
+        root = root.left
+      }
+    } else {
+      if(p[0] !== seg[1][0]) {
+        return root
+      } else {
+        var val = searchBucket(root.right, p)
+        if(val) {
+          return val
+        }
+        root = root.left
+      }
+    }
+  }
+  return lastNode
+}
+
 proto.castUp = function(p) {
   var bucket = bounds.le(this.coordinates, p[0])
   if(bucket < 0) {
     return -1
   }
   var root = this.slabs[bucket]
+  var hitNode = searchBucket(this.slabs[bucket], p)
   var lastHit = -1
-  var lastSegment = null
-  while(root) {
-    var seg = root.key, o
-    if(seg[0][0] < seg[1][0]) {
-      o = orient(p, seg[0], seg[1])
-    } else {
-      o = orient(p, seg[1], seg[0])
-    }
-    if(o < 0) {
-      root = root.left
-    } else if(o > 0) {
-      lastHit = root.value
-      lastSegment = seg
-      root = root.right
-    } else {
-      return root.value
-    }
+  if(hitNode) {
+    lastHit = hitNode.value
   }
-  //Edge case: need to handle horizontal segments
+  //Edge case: need to handle horizontal segments (sucks)
   if(this.coordinates[bucket] === p[0]) {
+    var lastSegment = null
+    if(hitNode) {
+      lastSegment = hitNode.key
+    }
+    if(bucket > 0) {
+      var otherHitNode = searchBucket(this.slabs[bucket-1], p)
+      if(otherHitNode) {
+        if(lastSegment) {
+          if(orderSegments(otherHitNode.key, lastSegment) > 0) {
+            lastSegment = otherHitNode.key
+            lastHit = otherHitNode.value
+          }
+        } else {
+          lastHit = otherHitNode.value
+          lastSegment = otherHitNode.key
+        }
+      }
+    }
     var horiz = this.horizontal[bucket]
     if(horiz.length > 0) {
       var hbucket = bounds.ge(horiz, p[1], compareHorizontal)
       if(hbucket < horiz.length) {
         var e = horiz[hbucket]
-        //Check if e is above/below last segment
-        if(lastSegment && e.start) {
-          var o
-          if(lastSegment[0][0] < lastSegment[1][0]) {
-            o = orient([p[0], e.y], lastSegment[0], lastSegment[1])
+        if(p[1] === e.y) {
+          if(e.closed) {
+            return e.index
           } else {
-            o = orient([p[0], e.y], lastSegment[1], lastSegment[0])
+            while(hbucket < horiz.length-1 && horiz[hbucket+1].y === p[1]) {
+              hbucket = hbucket+1
+              e = horiz[hbucket]
+              if(e.closed) {
+                return e.index
+              }
+            }
+            if(e.y === p[1] && !e.start) {
+              hbucket = hbucket+1
+              if(hbucket >= horiz.length) {
+                return lastHit
+              }
+              e = horiz[hbucket]
+            }
           }
-          if(o > 0) {
+        }
+        //Check if e is above/below last segment
+        if(e.start) {
+          if(lastSegment) {
+            var o = orient(lastSegment[0], lastSegment[1], [p[0], e.y])
+            if(lastSegment[0][0] > lastSegment[1][0]) {
+              o = -o
+            }
+            if(o > 0) {
+              lastHit = e.index
+            }
+          } else {
             lastHit = e.index
           }
-        } else {
+        } else if(e.y !== p[1]) {
           lastHit = e.index
         }
       }
@@ -71,10 +138,11 @@ proto.castUp = function(p) {
   return lastHit
 }
 
-function IntervalSegment(y, index, start) {
+function IntervalSegment(y, index, start, closed) {
   this.y = y
   this.index = index
   this.start = start
+  this.closed = closed
 }
 
 function Event(x, segment, create, index) {
@@ -83,6 +151,7 @@ function Event(x, segment, create, index) {
   this.create = create
   this.index = index
 }
+
 
 function createSlabDecomposition(segments) {
   var numSegments = segments.length
@@ -99,7 +168,7 @@ function createSlabDecomposition(segments) {
     if(d) {
       return d
     }
-    d = b.create - a.create
+    d = a.create - b.create
     if(d) {
       return d
     }
@@ -121,14 +190,29 @@ function createSlabDecomposition(segments) {
       i += 1
       if(e.segment[0][0] === e.x && e.segment[1][0] === e.x) {
         if(e.create) {
-          horiz.push(new IntervalSegment(
-              Math.min(e.segment[0][1], e.segment[1][1]),
-              e.index,
-              true))
-          horiz.push(new IntervalSegment(
-              Math.max(e.segment[0][1], e.segment[1][1]),
-              e.index,
-              false))
+          if(e.segment[0][1] < e.segment[1][1]) {
+            horiz.push(new IntervalSegment(
+                e.segment[0][1],
+                e.index,
+                true,
+                true))
+            horiz.push(new IntervalSegment(
+                e.segment[1][1],
+                e.index,
+                false,
+                false))
+          } else {
+            horiz.push(new IntervalSegment(
+                e.segment[1][1],
+                e.index,
+                true,
+                false))
+            horiz.push(new IntervalSegment(
+                e.segment[0][1],
+                e.index,
+                false,
+                true))
+          }
         }
       } else {
         if(e.create) {

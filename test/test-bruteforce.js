@@ -30,5 +30,21 @@ tape("bruteforce-test", function(t) {
   t.equals(castRay(segments, [1.5, 2]), 5)
   t.equals(castRay(segments, [1.5, 2.5]), -1)
 
+  var seg2 = [
+    [[0, -10], [0, -1]],
+    [[0, 2], [0, 10]]
+  ]
+
+  t.equals(castRay(seg2, [0, -0.999999]), 1)
+  t.equals(castRay(seg2, [0, -0.5]), 1)
+
+  t.equals(castRay([[[0,0], [0,1]]], [0,1]), -1)
+  t.equals(castRay([[[0,0], [0,1]]], [0,0]), 0)
+  t.equals(castRay([[[0,0], [0,1]]], [0,-1]), 0)
+  t.equals(castRay([[[0,0], [0,1]]], [0,0.5]), 0)
+  t.equals(castRay([[[0,0], [0,1]]], [0,2]), -1)
+
+  t.equals(castRay([[[0,-1], [0,0]]], [0,0]), -1)
+
   t.end()
 })

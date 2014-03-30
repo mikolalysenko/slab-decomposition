@@ -5,7 +5,24 @@ var slabDecomposition = require("../slabs.js")
 var checkInvariant = require("./invariant.js")
 var fullVerify = require("./full-verify.js")
 
-tape("easy test", function(t) {
+tape("simple-test", function(t) {
+  var segments = [
+    [[0,3], [-1,2]],
+    [[-1,2], [-1,0.5]]
+  ]
+
+  var slabs = slabDecomposition(segments)
+  checkInvariant(t, slabs)
+  t.equals(slabs.castUp([-1,2]), 1)
+
+  fullVerify(t, [[[0, 0], [1, 0]]])
+  fullVerify(t, [[[0, 0], [1, 1]]])
+  fullVerify(t, [])
+
+  t.end()
+})
+
+tape("random junk", function(t) {
 
   var segments = [
     [ [0,0], [1,0] ],
@@ -47,13 +64,14 @@ tape("rhombus", function(t) {
   t.end()
 })
 
-/*
 tape("pinwheel", function(t) {
 
   var segments = []
 
-  for(var i=0; i<32; ++i) {
-    var theta = (i/16) * Math.PI
+  var N = 16
+
+  for(var i=0; i<2*N; ++i) {
+    var theta = (i/N) * Math.PI
     segments.push([[0,0], [Math.cos(i), Math.sin(i)]])
   }
 
@@ -61,4 +79,18 @@ tape("pinwheel", function(t) {
 
   t.end()
 })
-*/
+
+
+tape("bars", function(t) {
+
+  var segments = [
+    [[0,0], [0,1]],
+    [[0,2], [0,4]],
+    [[0,6], [0,5]],
+    [[0,7], [0,6]]
+  ]
+
+  fullVerify(t, segments)
+
+  t.end()
+})

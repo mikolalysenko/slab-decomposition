@@ -17,7 +17,9 @@ function checkInvariants(t, slabs) {
   var numSlabs = slabs.slabs.length
   t.equals(slabs.coordinates.length, numSlabs, "checking numSlabs")
   t.equals(slabs.horizontal.length, numSlabs, "checking horizontal")
-  t.equals(slabs.slabs[numSlabs-1], null, "check last slabs")
+  if(numSlabs > 0) {
+    t.equals(slabs.slabs[numSlabs-1], null, "check last slab null")
+  }
   for(var i=0; i<numSlabs; ++i) {
     var x = slabs.coordinates[i]
     var y = Infinity
@@ -30,6 +32,9 @@ function checkInvariants(t, slabs) {
       if(j < h.length-1) {
         t.ok(h[j].y <= h[j+1].y, "checking horizontal ordering")
         t.ok(h[j].start != h[j+1].start, "checking alternating")
+        if(h[j].start) {
+          t.notEquals(h[j].closed, h[j+1].closed, "check halfopen")
+        }
       }
     }
     var s = slabs.slabs[i]
