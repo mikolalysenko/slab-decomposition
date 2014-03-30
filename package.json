@@ -1,6 +1,6 @@
 {
   "name": "slab-decomposition",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Slab decomposition data structure for 2D vertical ray queries",
   "main": "slabs.js",
   "directories": {
